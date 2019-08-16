@@ -4,12 +4,12 @@
 	<artifactId>oneservice-common-parent</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Spring Boot Dependencies</name>
-	<description>Spring Boot Dependencies</description>
-	<url>http://projects.spring.io/spring-boot/</url>
+	<name>oneservice Dependencies</name>
+	<description>oneservice Dependencies</description>
+	<url>https://github.com/PIE-Software-Solutions/SpringApiFramework/</url>
 	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
+		<name>Pie Software Solutions</name>
+		<url>http://piesoftsol.com</url>
 	</organization>
 	<licenses>
 		<license>
