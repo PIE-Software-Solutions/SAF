@@ -27,9 +27,9 @@ public class ExtendedSwaggerProxyRequestMappingHandlerMapping extends SwaggerPro
 	/**
 	 * Constructor
 	 * 
-	 * @param environment
-	 * @param handlerObject
-	 * @param servicePath
+	 * @param environment first parm
+	 * @param handlerObject second param
+	 * @param servicePath thrid param
 	 */
 	public ExtendedSwaggerProxyRequestMappingHandlerMapping(Environment environment, Object handlerObject,
 			String servicePath) {
@@ -57,7 +57,7 @@ public class ExtendedSwaggerProxyRequestMappingHandlerMapping extends SwaggerPro
 	/**
 	 * Gets the mapping path with base path using closure lambda expression
 	 * 
-	 * @param propertySourcedMapping
+	 * @param propertySourcedMapping first param
 	 * @return mappingPath - String
 	 */
 	private String getMappingPath(final PropertySourcedMapping propertySourcedMapping) {

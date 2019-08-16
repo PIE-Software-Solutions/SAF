@@ -37,7 +37,7 @@ public class LoggingAspect {
 	/**
 	 * Logs the method at entry level
 	 * 
-	 * @param joinPoint
+	 * @param joinPoint parm 1
 	 */
 	@Before("methodEntryExitLogging()")
 	@Order(1)
@@ -51,8 +51,8 @@ public class LoggingAspect {
 	/**
 	 * Logs the method at exit level
 	 * 
-	 * @param joinPoint
-	 * @param result
+	 * @param joinPoint parm 1
+	 * @param result parm 2
 	 */
 	@AfterReturning(pointcut = "methodEntryExitLogging()", returning = "result")
 	@Order(2)
@@ -66,8 +66,8 @@ public class LoggingAspect {
 	/**
 	 * Logs the method after exception is thrown
 	 * 
-	 * @param joinPoint
-	 * @param throwable
+	 * @param joinPoint parm 1
+	 * @param throwable parm 1
 	 */
 	@AfterThrowing(pointcut = "methodEntryExitLogging()", throwing = "throwable")
 	@Order(3)
@@ -81,9 +81,9 @@ public class LoggingAspect {
 	/**
 	 * Logs the time taken by the method
 	 * 
-	 * @param joinPoint
+	 * @param joinPoint parm 1
 	 * @return Object - result of executed method
-	 * @throws Throwable
+	 * @throws Throwable error
 	 */
 	@Around("timeTakenLogging()")
 	@Order(4)
@@ -103,7 +103,7 @@ public class LoggingAspect {
 	/**
 	 * Gets the join point class logger
 	 * 
-	 * @param joinPoint
+	 * @param joinPoint parm 1
 	 * @return Log - Class logger
 	 */
 	private static Log getLogger(JoinPoint joinPoint) {
@@ -113,7 +113,7 @@ public class LoggingAspect {
 	/**
 	 * Gets the log prefix string
 	 * 
-	 * @param joinPoint
+	 * @param joinPoint parm 1
 	 * @return String - Log prefix
 	 */
 	private static String getLogPrefix(JoinPoint joinPoint) {

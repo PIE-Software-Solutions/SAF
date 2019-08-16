@@ -56,8 +56,8 @@ public class CommonSecurityNoDbConfig extends WebSecurityConfigurerAdapter {
 	/**
 	 * To configure authentication based on user level access
 	 * 
-	 * @param authBuilder
-	 * @throws Exception
+	 * @param authBuilder parm 1
+	 * @throws Exception throws exception
 	 */
 	@Autowired
 	public void configAuthentication(AuthenticationManagerBuilder authBuilder) throws Exception {
@@ -82,7 +82,7 @@ public class CommonSecurityNoDbConfig extends WebSecurityConfigurerAdapter {
 	/**
 	 * Method to get the password bcrypt encoder
 	 * 
-	 * @return PasswordEncoder
+	 * @return PasswordEncoder return encryption
 	 */
 	@Bean
 	public PasswordEncoder passwordEncoder() {

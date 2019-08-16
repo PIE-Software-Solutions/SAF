@@ -41,8 +41,8 @@ public class SwaggerProxyRequestMappingHandlerMapping extends RequestMappingHand
 	/**
 	 * Constructor
 	 * 
-	 * @param handler
-	 * @param basePath
+	 * @param handler first parm
+	 * @param basePath second parm
 	 */
 	public SwaggerProxyRequestMappingHandlerMapping(Object handler, String basePath) {
 		this.handlerObject = handler;
@@ -81,10 +81,10 @@ public class SwaggerProxyRequestMappingHandlerMapping extends RequestMappingHand
 	/**
 	 * Does path mapping with base path
 	 * 
-	 * @param clazz
-	 * @param method
-	 * @param requestMappingInfo
-	 * @param handlerMethod
+	 * @param clazz first parm
+	 * @param method secon parm
+	 * @param requestMappingInfo third parm
+	 * @param handlerMethod fourth parm
 	 */
 	protected void doMapping(Class<?> clazz, Method method, RequestMappingInfo requestMappingInfo,
 			HandlerMethod handlerMethod) {
