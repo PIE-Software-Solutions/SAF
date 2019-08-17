@@ -30,7 +30,7 @@ import com.piesoftsol.oneservice.common.integration.util.JdbcDataBaseCondition;
  */
 @Conditional(JdbcDataBaseCondition.class)
 @Configuration
-@PropertySource("file:${app.home}/${app.prop}.properties")
+@PropertySource("file:${oneservice.home}/${oneservice.prop}.properties")
 public class DatabaseConfig {
 
 	/**
