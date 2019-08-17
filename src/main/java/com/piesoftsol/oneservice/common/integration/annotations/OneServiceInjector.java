@@ -5,6 +5,7 @@ import static com.piesoftsol.oneservice.common.integration.util.CommonConstants.
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -18,7 +19,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @Target(TYPE)
 @EnableEurekaClient
 @Configuration
-@ComponentScan(basePackages = { COMMON_PACKAGE_STRUCTURE })
+@Inherited
+@ComponentScan({COMMON_PACKAGE_STRUCTURE , "${oneservice.package}"})
 @SpringBootApplication
 @EnableAspectJAutoProxy
 public @interface OneServiceInjector {
