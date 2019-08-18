@@ -17,7 +17,7 @@ public class EnableSecurityNoDbBasedCondition implements Condition {
 			return false;
 		}
 
-		if (!oneServiceBootClass.isAnnotationPresent(EnableNoDbSecurity.class)) {
+		if (oneServiceBootClass.isAnnotationPresent(EnableNoDbSecurity.class)) {
 			return true;
 		}
 		
