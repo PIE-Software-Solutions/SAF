@@ -1,10 +1,11 @@
 package com.piesoftsol.oneservice.common.integration.config;
 
-import static com.piesoftsol.oneservice.common.integration.util.CommonConstants.COMMON_PACKAGE_STRUCTURE;
 import static com.piesoftsol.oneservice.common.integration.util.CommonConstants.SERVICE_NAME;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -36,10 +37,13 @@ import springfox.documentation.swagger2.web.Swagger2Controller;
  */
 @Configuration
 @EnableSwagger2
+@PropertySource("file:${oneservice.home}/${oneservice.prop}.properties")
 public class SwaggerConfig implements WebMvcConfigurer {
 
 	private static final String SWAGGER_BASE_PATH = "/" + SERVICE_NAME;
 
+	@Value("${oneservice.package}")
+	private String localPackage;
 	/**
 	 * To configure Swagger API
 	 *
@@ -47,15 +51,16 @@ public class SwaggerConfig implements WebMvcConfigurer {
 	 */
 	@Bean
 	public Docket swaggerApi() {
-		return new Docket(DocumentationType.SWAGGER_2).useDefaultResponseMessages(false).select()
-				.apis(RequestHandlerSelectors.basePackage(COMMON_PACKAGE_STRUCTURE)).paths(PathSelectors.any())
+		return new Docket(DocumentationType.SWAGGER_2)
+				.useDefaultResponseMessages(false).select()
+				.apis(RequestHandlerSelectors.basePackage(localPackage)).paths(PathSelectors.any())
 				.build().apiInfo(apiEndPointsInfo());
 	}
 	
 	private ApiInfo apiEndPointsInfo() {
         return new ApiInfoBuilder().title(SERVICE_NAME)
             .description(SERVICE_NAME)
-            .contact(new Contact("Kiran Kumar B", "http://iampsk.in", "hydsri.kiran@gmail.com"))
+            .contact(new Contact("Kiran Kumar B", "http://www.piesoftsol.com", "info@piesoftsol.com"))
             .license("Apache 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
             .version("1.0.0")
