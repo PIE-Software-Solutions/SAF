@@ -21,7 +21,7 @@ import static java.lang.annotation.ElementType.TYPE;
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
 @ResponseStatus(HttpStatus.CREATED)
-public @interface SetJsonMapping {
+public @interface SetPostJsonMapping {
     @AliasFor(annotation = RequestMapping.class, attribute = "path")
     String[] path() default {};
 }
