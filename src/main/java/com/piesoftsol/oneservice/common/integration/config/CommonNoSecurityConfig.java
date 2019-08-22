@@ -73,10 +73,10 @@ public class CommonNoSecurityConfig extends WebSecurityConfigurerAdapter {
 		final String METHOD_NAME = "configure";
 		LOGGER.info(METHOD_NAME, "Checking Security : ");
 		httpSecurity
-		.authorizeRequests().antMatchers(SPRING_ACTUATOR_PATHS).permitAll().and()
-		.authorizeRequests().antMatchers(ALLOWED_SERVICE_PATHS).permitAll().and()
-		.authorizeRequests().antMatchers("/restart").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')").and()
-		.authorizeRequests().antMatchers("/shutdown").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')");
+			.authorizeRequests().antMatchers(SPRING_ACTUATOR_PATHS).permitAll().and()
+			.authorizeRequests().antMatchers(ALLOWED_SERVICE_PATHS).permitAll().and()
+			.authorizeRequests().antMatchers("/restart").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')").and()
+			.authorizeRequests().antMatchers("/shutdownContext").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')");
 		httpSecurity.csrf().disable();
 		httpSecurity.httpBasic();
 	}

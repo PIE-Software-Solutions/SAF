@@ -72,7 +72,7 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests().antMatchers(SPRING_ACTUATOR_PATHS).permitAll().and()
 			.authorizeRequests().antMatchers(ALLOWED_SERVICE_PATHS).authenticated().anyRequest().access("hasRole('ROLE_USER')").and()
 			.authorizeRequests().antMatchers("/restart").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')").and()
-			.authorizeRequests().antMatchers("/shutdown").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')");
+			.authorizeRequests().antMatchers("/shutdownContext").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')");
 		httpSecurity.csrf().disable();
 		httpSecurity.httpBasic();
 		

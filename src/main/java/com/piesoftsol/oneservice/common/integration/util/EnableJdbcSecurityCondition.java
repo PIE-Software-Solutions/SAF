@@ -30,21 +30,21 @@ public class EnableJdbcSecurityCondition implements Condition {
 				if (!oneServiceBootClass.isAnnotationPresent(EnableJdbc.class)) {
 					message = "EnableJdbcSecurity Requires JDBC enable. Please add @EnableJdbc";
 					LOGGER.error(METHOD, message);
-					throw new IllegalAccessException(message);
+					throw new IllegalArgumentException(message);
 				}else {
 					if (oneServiceBootClass.isAnnotationPresent(IgnoreSecurity.class) || oneServiceBootClass.isAnnotationPresent(EnablePropSecurity.class)) {
 						message = "IgnoreSecurity can't combined with Anyother security methods. Please removed other security Methods.";
 						LOGGER.error(METHOD, message);
-						throw new IllegalAccessException(message);
+						throw new IllegalArgumentException(message);
 					}else {
 						return true;
 					}
 				}
-			}catch(IllegalAccessException e) 
+			}catch(IllegalArgumentException e) 
 	        {
 	            try {
 					throw e;
-				} catch (IllegalAccessException e1) {
+				} catch (IllegalArgumentException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					System.exit(-100);
