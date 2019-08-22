@@ -60,7 +60,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
 	private ApiInfo apiEndPointsInfo() {
         return new ApiInfoBuilder().title(SERVICE_NAME)
             .description(SERVICE_NAME)
-            .contact(new Contact("Kiran Kumar B", "http://www.piesoftsol.com", "info@piesoftsol.com"))
+            .contact(new Contact("admin", "http://www.piesoftsol.com", "info@piesoftsol.com"))
             .license("Apache 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
             .version("1.0.0")
