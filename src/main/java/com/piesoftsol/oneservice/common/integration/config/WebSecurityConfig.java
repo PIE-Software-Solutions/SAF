@@ -1,5 +1,6 @@
 package com.piesoftsol.oneservice.common.integration.config;
 
+import static com.piesoftsol.oneservice.common.integration.util.CommonConstants.ALLOWED_SERVICE_PATHS;
 import static com.piesoftsol.oneservice.common.integration.util.CommonConstants.ONESERVICE_DATA_SOURCE;
 import static com.piesoftsol.oneservice.common.integration.util.SQLQueryConstants.GET_OAUTH_USERS;
 import static com.piesoftsol.oneservice.common.integration.util.SQLQueryConstants.GET_OAUTH_USER_ROLES;
@@ -22,6 +23,17 @@ import com.piesoftsol.oneservice.common.integration.util.EnableOAuth2JdbcServerC
 @Conditional(value = {EnableOAuth2JdbcServerCondition.class})
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	
+	/**
+	 * Spring Actuator paths
+	 */
+	private static final String[] SPRING_ACTUATOR_PATHS = new String[] { 	"/actuator/health", 
+																			"/actuator/metrics", 
+																			"/actuator/monitoring",
+																			"/swagger-ui.html", "/webjars/**",
+																			"/swagger-resources/**", 
+																			"/v2/api-docs"};
+	
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     
@@ -50,12 +62,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         // @formatter:off
-		http.authorizeRequests().antMatchers("/login").permitAll()
+    	http
+		.authorizeRequests().antMatchers(SPRING_ACTUATOR_PATHS).permitAll().and()
+		.authorizeRequests().antMatchers(ALLOWED_SERVICE_PATHS).authenticated().anyRequest().access("hasRole('ROLE_USER')").and()
+		.authorizeRequests().antMatchers("/restart").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')").and()
+		.authorizeRequests().antMatchers("/shutdownContext").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')");
+    	http.csrf().disable();
+    	http.httpBasic();
+		/*http.authorizeRequests().antMatchers("/login").permitAll()
 		.antMatchers("/oauth/token/revokeById/**").permitAll()
 		.antMatchers("/tokens/**").permitAll()
 		.anyRequest().authenticated()
 		.and().formLogin().permitAll()
-		.and().csrf().disable();
+		.and().csrf().disable();*/
 		// @formatter:on
     }
 
