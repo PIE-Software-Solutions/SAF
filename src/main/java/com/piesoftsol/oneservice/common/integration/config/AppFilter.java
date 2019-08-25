@@ -47,8 +47,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.MDC;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -58,6 +60,7 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.piesoftsol.oneservice.common.integration.util.AppLogger;
 import com.piesoftsol.oneservice.common.integration.util.EnableJsonValidation;
 import com.piesoftsol.oneservice.common.integration.util.JSONSchemaValidator;
+import com.piesoftsol.oneservice.common.integration.util.XMLSchemaValidator;
 
 /**
  * Application Filter class
@@ -109,28 +112,45 @@ public class AppFilter implements Filter {
 				&& ALLOWED_FILTER_REQUEST_METHODS.contains(requestMethod) && requestURI.contains(SERVICE_NAME)) {
 			ProcessingReport report = null;
 			InputStream schemaStream = null;
+			String xmlValidation = null;
 
 			try {
 				final byte[] requestBody = requestWrapper.getBody();
 				final String requestBodyStr = new String(requestBody);
-
-				LOGGER.info("Incoming Request Body :: " + requestBodyStr.replaceAll("\n", ""));
 				
 				requestURI = requestURI.substring(requestURI.lastIndexOf("/") + 1, requestURI.length());
 				if (isNotBlank(requestURI)) {
-					// Read schema as stream
-					schemaStream = JSONSchemaValidator.class.getResourceAsStream("/schema/" + requestURI + ".json");
-					// Validating the input request against its JSON schema
-					report = JSONSchemaValidator.validate(requestBody, schemaStream);					
+					if(MediaType.APPLICATION_XML_VALUE.equals(requestWrapper.getContentType()))
+					{
+
+						LOGGER.info("Incoming Request Body :: " + requestBodyStr.replaceAll("\n", ""));
+						// Read schema as stream
+						schemaStream = XMLSchemaValidator.class.getResourceAsStream("/schema/" + requestURI + ".wsd");
+						// Validating the input request against its JSON schema
+						xmlValidation = XMLSchemaValidator.validate(requestBody, schemaStream);
+					}else {
+						LOGGER.info("Incoming Request Body :: " + requestBodyStr.replaceAll("\n", ""));
+						// Read schema as stream
+						schemaStream = JSONSchemaValidator.class.getResourceAsStream("/schema/" + requestURI + ".json");
+						// Validating the input request against its JSON schema
+						report = JSONSchemaValidator.validate(requestBody, schemaStream);
+					}
 				}
 			} catch (Exception exception) {
 				LOGGER.error(methodName, "Exception: " + exception.getMessage());
 
 				JSONObject resposonseObj = new JSONObject();
+				if(MediaType.APPLICATION_XML_VALUE.equals(requestWrapper.getContentType()))
+				{
+					// In case of any exception
+					setReponseDetailsXml(responseWrapper, resposonseObj, HttpStatus.INTERNAL_SERVER_ERROR, ERROR_CODE,
+							HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), null);
 
-				// In case of any exception
-				setReponseDetails(responseWrapper, resposonseObj, HttpStatus.INTERNAL_SERVER_ERROR, ERROR_CODE,
-						HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), null);
+				}else {
+					// In case of any exception
+					setReponseDetails(responseWrapper, resposonseObj, HttpStatus.INTERNAL_SERVER_ERROR, ERROR_CODE,
+							HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), null);
+				}
 			} finally {
 				try {
 					if (null != schemaStream) {
@@ -141,24 +161,39 @@ public class AppFilter implements Filter {
 							+ ioException.getMessage());
 				}
 			}
-
-			if (null != report) {
-				if (report.isSuccess()) {
+			if(MediaType.APPLICATION_XML_VALUE.equals(requestWrapper.getContentType())) {
+				if (null == xmlValidation || xmlValidation.isEmpty() ||  "Success".equalsIgnoreCase(xmlValidation)) {
 					/*
 					 * Forwarding the wrapped request as the original
 					 * inputStream is read and is unusable in controller
 					 */
 					chain.doFilter(requestWrapper, responseWrapper);
-				} else {
-					JSONObject resposonseObj = new JSONObject();
-
-					// In case if the JSON schema validation fails,
-					// populate the report in response
-					final List<JSONObject> jsonValidationErrorList = extractJSONValidationError(report);
-
-					// In case of bad request
-					setReponseDetails(responseWrapper, resposonseObj, HttpStatus.BAD_REQUEST, ERROR_CODE, null,
-							jsonValidationErrorList);
+				}else {
+					if(responseWrapper != null ) {
+						JSONObject resposonseObj = new JSONObject();
+						setReponseDetailsXml(responseWrapper, resposonseObj, HttpStatus.BAD_REQUEST, ERROR_CODE, null,
+								xmlValidation);
+					}
+				}
+			}else {
+				if (null != report) {
+					if (report.isSuccess()) {
+						/*
+						 * Forwarding the wrapped request as the original
+						 * inputStream is read and is unusable in controller
+						 */
+						chain.doFilter(requestWrapper, responseWrapper);
+					} else {
+						JSONObject resposonseObj = new JSONObject();
+	
+						// In case if the JSON schema validation fails,
+						// populate the report in response
+						final List<JSONObject> jsonValidationErrorList = extractJSONValidationError(report);
+	
+						// In case of bad request
+						setReponseDetails(responseWrapper, resposonseObj, HttpStatus.BAD_REQUEST, ERROR_CODE, null,
+								jsonValidationErrorList);
+					}
 				}
 			}
 		} else {
@@ -231,6 +266,73 @@ public class AppFilter implements Filter {
 			httpServletResponse.setHeader(CONTENT_TYPE, APPLICATION_JSON);
 			httpServletResponse.setStatus(httpStatus.value());
 			httpServletResponse.getWriter().write(resposonseObj.toString());
+			httpServletResponse.getWriter().flush();
+			httpServletResponse.getWriter().close();
+		}
+		LOGGER.endMethod(methodName);
+	}
+	
+	/**
+	 * Sets the response details
+	 * 
+	 * @param httpServletResponse
+	 * @param resposonseObj
+	 * @param httpStatus
+	 * @param responseCode
+	 * @param responseMessage
+	 * @param jsonValidationErrorList
+	 * @throws IOException
+	 */
+	private static void setReponseDetailsXml(HttpServletResponse httpServletResponse, JSONObject resposonseObj,
+			final HttpStatus httpStatus, final Integer responseCode, final String responseMessage,
+			final String jsonValidationErrorList) throws IOException {
+		final String methodName = "setReponseDetails";
+		LOGGER.startMethod(methodName);
+
+		if (null != httpServletResponse && null != resposonseObj) {
+			try {
+				if(PC_REQ.equals(YES)) {
+					Date date = Calendar.getInstance().getTime();  
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS");  
+					String outTime = dateFormat.format(date);
+					resposonseObj.put(REQUEST_INTIME_ID, MDC.get(REQUEST_INTIME));
+					resposonseObj.put(REQUEST_OUTTIME_ID, outTime);
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss.SSS", Locale.ENGLISH);
+				    Date firstDate;
+					try {
+						firstDate = sdf.parse(MDC.get(REQUEST_INTIME).toString());
+						Date secondDate = sdf.parse(outTime);
+						long requestTime = Math.abs(secondDate.getTime() - firstDate.getTime());
+						resposonseObj.put(PROCESS_TIME, requestTime);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+					}
+					resposonseObj.put(REQUEST_ID, MDC.get(REQUEST_IP));
+				}
+				resposonseObj.put(REQUEST_ID, MDC.get(REQUEST_PATTERN));
+				
+				resposonseObj.put(RESPONSE_CODE, responseCode);
+
+				if (null != responseMessage) {
+					resposonseObj.put(RESPONSE_MESSAGE, responseMessage);
+				}
+
+				if (null != jsonValidationErrorList) {
+					resposonseObj.put(VALIDATION_ERRORS, jsonValidationErrorList);
+				}
+
+				LOGGER.info(methodName,
+						" REQUEST_ID :: " + resposonseObj.get(REQUEST_ID) + " RESPONSE_CODE :: "
+								+ resposonseObj.get(RESPONSE_CODE) + " RESPONSE_MESSAGE :: "
+								+ resposonseObj.get(RESPONSE_MESSAGE));
+			} catch (JSONException jsonException) {
+				LOGGER.error(methodName, "Exception: " + jsonException.getMessage());
+			}
+
+			httpServletResponse.setHeader(CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
+			httpServletResponse.setStatus(httpStatus.value());
+			String xml = XML.toString(resposonseObj);
+			httpServletResponse.getWriter().write(xml);
 			httpServletResponse.getWriter().flush();
 			httpServletResponse.getWriter().close();
 		}

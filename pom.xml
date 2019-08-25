@@ -5,7 +5,7 @@
 
 	<groupId>com.piesoftsol.oneservice.common</groupId>
     <artifactId>oneservice-common</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Spring Boot MicroService FrameWork</name>
 	<description>Spring Boot MicroService FrameWork Library</description>
@@ -64,7 +64,8 @@
 		<swagger.version>2.9.2</swagger.version>
 		<swaggerannot.version>2.0.8</swaggerannot.version>
 		<springswagger.version>2.0.0.M1</springswagger.version>
-	    	<netflix-eureka-client.version>2.1.2.RELEASE</netflix-eureka-client.version>
+    	<netflix-eureka-client.version>2.1.2.RELEASE</netflix-eureka-client.version>
+	    	<oauth.version>2.3.5.RELEASE</oauth.version>
 	</properties>
 
     <!-- Add typical dependencies for a web application -->
@@ -147,6 +148,11 @@
 		    <scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+            <version>${oauth.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>compile</scope>
@@ -207,7 +213,11 @@
         <dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			</dependency>
+		</dependency>
+		<dependency>
+		  <groupId>com.fasterxml.jackson.dataformat</groupId>
+		  <artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.jsonschema2pojo</groupId>
 			<artifactId>jsonschema2pojo-core</artifactId>

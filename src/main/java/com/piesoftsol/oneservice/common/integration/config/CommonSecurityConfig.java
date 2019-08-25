@@ -20,8 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.piesoftsol.oneservice.common.integration.util.AppLogger;
-import com.piesoftsol.oneservice.common.integration.util.EnableSecurityCondition;
-import com.piesoftsol.oneservice.common.integration.util.JdbcDataBaseCondition;
+import com.piesoftsol.oneservice.common.integration.util.EnableJdbcSecurityCondition;
 
 /**
  * Common class to configure the authentication security for the users accessing
@@ -31,7 +30,7 @@ import com.piesoftsol.oneservice.common.integration.util.JdbcDataBaseCondition;
  * 
  * @author Kiran
  */
-@Conditional(value = {JdbcDataBaseCondition.class, EnableSecurityCondition.class})
+@Conditional(value = {EnableJdbcSecurityCondition.class})
 @Configuration
 public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -69,10 +68,11 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		final String METHOD_NAME = "configure";
 		LOGGER.info(METHOD_NAME, "Checking Security : ");
-		httpSecurity.authorizeRequests().antMatchers(SPRING_ACTUATOR_PATHS).permitAll().and().authorizeRequests()
-				.antMatchers(ALLOWED_SERVICE_PATHS).authenticated().anyRequest().access("hasRole('ROLE_USER')")
-				.and().authorizeRequests().antMatchers("/shutdown").authenticated().anyRequest()
-				.access("hasRole('ROLE_ADMIN')");
+		httpSecurity
+			.authorizeRequests().antMatchers(SPRING_ACTUATOR_PATHS).permitAll().and()
+			.authorizeRequests().antMatchers(ALLOWED_SERVICE_PATHS).authenticated().anyRequest().access("hasRole('ROLE_USER')").and()
+			.authorizeRequests().antMatchers("/restart").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')").and()
+			.authorizeRequests().antMatchers("/shutdownContext").authenticated().anyRequest().access("hasRole('ROLE_ADMIN')");
 		httpSecurity.csrf().disable();
 		httpSecurity.httpBasic();
 		
