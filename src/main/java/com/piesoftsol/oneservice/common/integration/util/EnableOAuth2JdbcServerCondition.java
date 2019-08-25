@@ -13,7 +13,7 @@ import com.piesoftsol.oneservice.common.integration.annotations.EnablePropSecuri
 
 import static com.piesoftsol.oneservice.common.integration.config.OneServiceInit.oneServiceBootClass;
 
-public class EnableJdbcSecurityCondition implements Condition {
+public class EnableOAuth2JdbcServerCondition implements Condition {
 
 	private static final String METHOD = "EnableSecurityCondition";
 	
@@ -27,14 +27,14 @@ public class EnableJdbcSecurityCondition implements Condition {
 			return false;
 		}
 
-		if (oneServiceBootClass.isAnnotationPresent(EnableJdbcSecurity.class)) {
+		if (oneServiceBootClass.isAnnotationPresent(EnableOAuth2JdbcServer.class)) {
 			try {
 				if (!oneServiceBootClass.isAnnotationPresent(EnableJdbc.class)) {
-					message = "EnableJdbcSecurity Requires JDBC enable. Please add @EnableJdbc";
+					message = "EnableOAuth2JdbcServer Requires JDBC enable. Please add @EnableJdbc";
 					LOGGER.error(METHOD, message);
 					throw new IllegalArgumentException(message);
 				}else {
-					if (oneServiceBootClass.isAnnotationPresent(IgnoreSecurity.class) || oneServiceBootClass.isAnnotationPresent(EnablePropSecurity.class) || oneServiceBootClass.isAnnotationPresent(EnableOAuth2JdbcSecurity.class) || oneServiceBootClass.isAnnotationPresent(EnableOAuth2JdbcServer.class)) {
+					if (oneServiceBootClass.isAnnotationPresent(IgnoreSecurity.class) || oneServiceBootClass.isAnnotationPresent(EnablePropSecurity.class) || oneServiceBootClass.isAnnotationPresent(EnableJdbcSecurity.class) || oneServiceBootClass.isAnnotationPresent(EnableOAuth2JdbcSecurity.class)) {
 						message = "IgnoreSecurity can't combined with Anyother security methods. Please removed other security Methods.";
 						LOGGER.error(METHOD, message);
 						throw new IllegalArgumentException(message);
@@ -51,7 +51,7 @@ public class EnableJdbcSecurityCondition implements Condition {
 					e1.printStackTrace();
 					System.exit(-100);
 				} // rethrowing the exception 
-	        }
+	        } 
 		}
 		
 		return false;

@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -35,7 +34,6 @@ public class XMLSchemaValidator {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = factory.newSchema(new StreamSource(schemaStream));
             Validator validator = schema.newValidator();
-            Source xmlInput=new StreamSource(new StringReader(methodName));
             validator.validate(new StreamSource(new StringReader(new String(inputBytes))));
         } catch (IOException e) {
             // handle exception while reading source

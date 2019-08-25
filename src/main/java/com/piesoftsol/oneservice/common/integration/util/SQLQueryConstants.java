@@ -24,4 +24,10 @@ public class SQLQueryConstants {
 			+ " FROM " + COMMON_USER_ROLE_TABLE + " r, " + COMMON_SERVICE_TABLE + " s WHERE r." + COMMON_SERVICE_USER
 			+ " = s." + COMMON_SERVICE_USER + " AND s." + COMMON_SERVICE_SERVICE + "='" + SERVICE_NAME + "' AND r."
 			+ COMMON_SERVICE_USER + " = ?";
+	
+	public static final String GET_OAUTH_USERS = "SELECT userName, password, CASE isenabled WHEN 1 THEN 'true' ELSE 'false' END enabled FROM TB_USERS WHERE userName = ?";
+
+	public static final String GET_OAUTH_USER_ROLES = "SELECT r.userName, r.role  FROM TB_OAUTH_USER_ROLES r WHERE r.userName = ?";
+	
+	
 }
